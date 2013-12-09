@@ -48,9 +48,10 @@ end
 if __FILE__ == $0
   clockType = TwelveHourClock.new
 
-  paramsError = "Must be in the form:\n  ruby analog clock hh:mm [hh:mm ...]"
+  paramsError = "Must be in the form:\n  ruby analog clock hh:mm [hh:mm]"
   if ARGV.length < 1 || ARGV.length > 2
     puts paramsError
+    exit
   end
 
   areThereInvalidParams = false 
@@ -73,12 +74,32 @@ if __FILE__ == $0
         timesArray << aTime 
       end
     elsif clockType.is_a?(TwentyFourHourClock)
+    else
+      puts paramsError
+      exit
+    end
+  end
+
+  if timesArray.length == 1
+    # If theres only one argument to the progam(a single timestamp)
+    # then we find the angle between the hour and the minute hand.
+  
+    hoursAndMinutes = timesArray[0]
+    angleFromMidnightForHourHand  = calculateHoursAngleFromMidnightClockwise(clockType, clockType, hoursAndMinutes.hours)
+    angleFromMidnightForMinuteHand = calculateMinutesAngleFromMidnightClockwise(hoursAndMinutes.minutes)
+
+    angleOfDifference = angleFromMidnightForHourHand - angleFromMidnightForMinuteHand
+
+    otherAngleOfDifference = (360 - angleOfDifference).abs
+    if otherAngleOfDifference < angleOfDifference
+      angleOfDifference = otherAngleOfDifference
     end
 
-   puts timesArray
+    puts "The angle between the minute hand and the hour hand is:"
+    puts angleOfDifference
+  elsif timesArray.length == 2
+    # If theres two arguments to the program we print the number of revolutions and
+    # part revolutions for both the minute and the hour hand required to get from the
+    # first of the two timestamps to the second.
   end
-  if areThereInvalidParams
-    puts paramsError
-  end
-
 end
